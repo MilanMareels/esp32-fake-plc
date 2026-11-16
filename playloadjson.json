@@ -1,0 +1,26 @@
+{
+  "plcId": "PLC_LINE_01",
+  "timestamp": "2026-11-15T18:34:00Z",
+  "status": "RUNNING",
+  "sensors": {
+    "temperature": 68.4,
+    "pressure": 4.2,
+    "rpm": 1450,
+    "tankLevel": 78
+  },
+  "digitalInputs": {
+    "safetyGateClosed": true,
+    "emergencyStopPressed": false,
+    "conveyorSensorActive": true
+  },
+  "production": {
+    "goodCount": 1042,
+    "rejectCount": 14,
+    "cycleTimeSec": 3.4
+  },
+  "error": {
+    "hasError": false,
+    "errorCode": 0,
+    "errorMessage": ""
+  }
+}
