@@ -16,12 +16,23 @@ void sendJson(int code, JsonDocument& doc) {
 }
 
 const char* fakePlcStatus(){
-  int randomNumber = random(0,2); // 0 = off, 1 = on
+  int status = random(0,5); // 0 = STOPPED, 1 = RUNNING, 2 = ERROR, 3 = MAINTENANCE, 4 = IDLE
 
-  if(randomNumber == 0){
-    return "OFF";
+  switch (status)
+  {
+    case 0:
+      return "STOPPED";
+    case 1:
+      return "RUNNING";
+    case 2:
+      return "ERROR";
+    case 3:
+      return "MAINTENANCE";
+    case 4:
+      return "IDLE";
+    default:
+      return "UNKNOWN";
   }
-  return "ON";
 }
 
 const char* getTimeStamp(){
@@ -31,12 +42,30 @@ const char* getTimeStamp(){
   return ctime(&timestamp);
 }
 
+float randomFloat(float minVal, float maxVal) {
+  return random(minVal * 10, maxVal * 10) / 10.0;
+}
+
+void populateSensors(JsonObject sensors) {
+  sensors["temperature"] = randomFloat(20.0, 95.0);
+  sensors["pressure"] = randomFloat(1.0, 8.5);
+  sensors["rpm"] = random(0, 2000);
+  sensors["tankLevel"] = random(0, 100);
+}
+
+void handleGetSensor() {
+  JsonDocument doc;
+  populateSensors(doc.to<JsonObject>());
+  sendJson(200, doc);
+}
+
 void handlePLC(){
   JsonDocument doc;
 
   doc["plcId"] = "PLC_LINE_01";
   doc["timestamp"] = getTimeStamp();
   doc["status"] = fakePlcStatus();
+  populateSensors(doc["sensors"].to<JsonObject>());
 
   sendJson(200, doc);
 }
@@ -70,8 +99,8 @@ void setup() {
   Serial.println(WiFi.localIP());
 
   server.onNotFound(handleNotFound);
-  server.on("/api/v1/status", HTTP_GET, handleStatus);
-  server.on("/api/v1/plc", HTTP_GET, handlePLC);
+  server.on("/api/v1/status-esp32", HTTP_GET, handleStatus);
+  server.on("/api/v1/status-plc", HTTP_GET, handlePLC);
   server.begin();
 }
 
